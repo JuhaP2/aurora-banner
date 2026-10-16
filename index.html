@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aurora Banner</title>
+<meta name="description" content="Make an animated aurora banner for your GitHub profile README. Free, no sign-up, pure SVG.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B1E3A'/%3E%3Cpath d='M2 16C8 9 14 20 20 13S28 10 30 12V20C24 23 18 16 12 21S4 22 2 22Z' fill='%232EE6A6'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #070F1F; --panel: #0D1A30; --line: #1C3152; --text: #EAF6FF; --muted: #8FA9C8;
+    --accent: #2EE6A6; --accent2: #3FA9F5;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 "Segoe UI", Inter, system-ui, -apple-system, sans-serif;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 32px 16px 56px; }
+  header h1 { margin: 0; font-size: clamp(28px, 5vw, 42px); letter-spacing: -.5px; }
+  header h1 span {
+    background: linear-gradient(90deg, #2EE6A6, #3FA9F5, #9B6CFF);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header p { margin: 6px 0 24px; color: var(--muted); }
+  .preview {
+    background: #0d1117; border: 1px solid var(--line); border-radius: 14px; padding: 16px;
+  }
+  .preview svg { display: block; width: 100%; height: auto; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+  .card h2 { margin: 0 0 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
+  input[type=text] {
+    width: 100%; padding: 10px 12px; border-radius: 9px; border: 1px solid var(--line);
+    background: #08142A; color: var(--text); font: inherit;
+  }
+  input[type=text]:focus { outline: 2px solid var(--accent2); border-color: transparent; }
+  .themes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .theme {
+    border: 2px solid transparent; border-radius: 10px; padding: 6px 10px 6px 6px; cursor: pointer;
+    background: #08142A; color: var(--text); font: inherit; font-size: 13px; display: flex; align-items: center; gap: 8px;
+  }
+  .theme i { width: 28px; height: 18px; border-radius: 5px; display: block; }
+  .theme[aria-pressed=true] { border-color: var(--accent); }
+  .colors { display: flex; gap: 10px; flex-wrap: wrap; }
+  .colors label { display: flex; align-items: center; gap: 6px; margin: 0; }
+  input[type=color] { width: 34px; height: 28px; border: none; background: none; padding: 0; cursor: pointer; }
+  .row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; }
+  .row label { display: flex; align-items: center; gap: 6px; margin: 0; color: var(--text); }
+  select {
+    padding: 8px 10px; border-radius: 9px; border: 1px solid var(--line); background: #08142A; color: var(--text); font: inherit;
+  }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  button.primary, button.ghost {
+    font: 600 14px/1 inherit; font-family: inherit; padding: 12px 16px; border-radius: 10px; cursor: pointer; border: none;
+  }
+  button.primary { background: linear-gradient(90deg, #2EE6A6, #3FA9F5); color: #04101F; }
+  button.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+  button:focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; }
+  pre {
+    margin: 12px 0 0; padding: 12px; background: #08142A; border: 1px solid var(--line); border-radius: 9px;
+    overflow-x: auto; font: 12.5px/1.5 "Fira Code", Consolas, monospace; color: #BFD6EE;
+  }
+  ol { margin: 0; padding-left: 20px; color: var(--muted); }
+  ol b { color: var(--text); }
+  .toast { color: var(--accent); font-size: 13px; min-height: 18px; margin-top: 8px; }
+  footer { margin-top: 28px; color: var(--muted); font-size: 13px; text-align: center; }
+  footer a { color: var(--accent2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span>Aurora Banner</span> for your GitHub profile</h1>
+    <p>Type your name, pick the northern lights you like, download the SVG and drop it into your profile README. Free, no sign-up, fully animated.</p>
+  </header>
+
+  <div class="preview" id="preview" aria-label="Banner preview"></div>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Text</h2>
+      <label for="title">Name</label>
+      <input type="text" id="title" value="Your Name" maxlength="40">
+      <label for="slogan">Slogan</label>
+      <input type="text" id="slogan" value="Building things people love." maxlength="70">
+      <label for="subtitle">Tagline (optional)</label>
+      <input type="text" id="subtitle" value="" placeholder="GAMES • WEB • AI" maxlength="80">
+      <label for="font">Font</label>
+      <select id="font">
+        <option value="sans">Modern sans</option>
+        <option value="serif">Classic serif</option>
+        <option value="mono">Developer mono</option>
+      </select>
+    </section>
+
+    <section class="card">
+      <h2>Style</h2>
+      <div class="themes" id="themes"></div>
+      <label>Colors</label>
+      <div class="colors">
+        <label><input type="color" id="c1"> Glow 1</label>
+        <label><input type="color" id="c2"> Glow 2</label>
+        <label><input type="color" id="c3"> Glow 3</label>
+        <label><input type="color" id="sky"> Sky</label>
+        <label><input type="color" id="ink"> Text</label>
+      </div>
+      <div class="row">
+        <label><input type="checkbox" id="stars" checked> Stars</label>
+        <label><input type="checkbox" id="mountains" checked> Mountains</label>
+        <label><input type="checkbox" id="animate" checked> Animation</label>
+        <label><input type="checkbox" id="credit" checked> Small credit</label>
+      </div>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:16px">
+    <h2>Add it to your profile</h2>
+    <ol>
+      <li><b>Download</b> the SVG and upload it to your profile repository (the one named after your username), for example as <code>assets/banner.svg</code>.</li>
+      <li><b>Paste</b> this at the top of your <code>README.md</code>:</li>
+    </ol>
+    <pre id="snippet"></pre>
+    <div class="actions">
+      <button class="primary" id="download">Download SVG</button>
+      <button class="ghost" id="copy">Copy README snippet</button>
+      <button class="ghost" id="copysvg">Copy SVG code</button>
+    </div>
+    <div class="toast" id="toast" role="status"></div>
+  </section>
+
+  <footer>
+    Made by <a href="https://github.com/JuhaP2">@JuhaP2</a> ·
+    <a href="https://github.com/JuhaP2/aurora-banner">Source on GitHub</a> ·
+    Also try <a href="https://github.com/JuhaP2/contribution-tetris">Contribution Tetris</a>
+  </footer>
+</div>
+
+<script>
+const THEMES = {
+  Aurora:  { c1: "#2EE6A6", c2: "#3FA9F5", c3: "#9B6CFF", sky: "#050B1A", ink: "#EAF6FF" },
+  Sunset:  { c1: "#FFB347", c2: "#FF5C7A", c3: "#9B6CFF", sky: "#1A0B1E", ink: "#FFF2E6" },
+  Ocean:   { c1: "#3FE0F5", c2: "#3F7CF5", c3: "#2EE6A6", sky: "#031426", ink: "#E6F7FF" },
+  Forest:  { c1: "#A6E22E", c2: "#2EE6A6", c3: "#1F9E6E", sky: "#06140C", ink: "#EEFFE6" },
+  Neon:    { c1: "#FF2EC4", c2: "#7A2EFF", c3: "#2EF2FF", sky: "#0A0418", ink: "#FFFFFF" },
+  Ember:   { c1: "#FF6B2E", c2: "#FFD166", c3: "#FF2E4D", sky: "#140804", ink: "#FFF4E0" },
+};
+const FONTS = {
+  sans:  "'Segoe UI', Inter, Helvetica, Arial, sans-serif",
+  serif: "Georgia, 'Times New Roman', serif",
+  mono:  "'Fira Code', Consolas, 'Courier New', monospace",
+};
+const $ = (id) => document.getElementById(id);
+const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+function shade(hex, f) {
+  const n = parseInt(hex.slice(1), 16);
+  const ch = (v) => Math.max(0, Math.min(255, Math.round(v + (255 - v) * f))).toString(16).padStart(2, "0");
+  return "#" + ch(n >> 16 & 255) + ch(n >> 8 & 255) + ch(n & 255);
+}
+
+function buildSVG() {
+  const v = {
+    title: $("title").value.trim() || "Your Name",
+    slogan: $("slogan").value.trim(),
+    subtitle: $("subtitle").value.trim(),
+    font: FONTS[$("font").value],
+    c1: $("c1").value, c2: $("c2").value, c3: $("c3").value, sky: $("sky").value, ink: $("ink").value,
+    stars: $("stars").checked, mountains: $("mountains").checked, animate: $("animate").checked, credit: $("credit").checked,
+  };
+  const sky2 = shade(v.sky, 0.08);
+  const lines = [v.slogan, v.subtitle].filter(Boolean).length;
+  const titleY = lines === 0 ? 118 : lines === 1 ? 98 : 84;
+  const anim = v.animate;
+  const starPos = [[90,30],[260,150],[410,22],[560,40],[780,28],[960,150],[1120,36],[680,160],[180,80]];
+  const stars = v.stars ? starPos.map(([x, y], i) =>
+    `<circle class="star" cx="${x}" cy="${y}" r="${(1.2 + (i % 3) * 0.2).toFixed(1)}" style="animation-delay:${(i * 0.4).toFixed(1)}s"/>`).join("") : "";
+  const mountains = v.mountains ?
+    `<path fill="${sky2}" opacity=".9" d="M0 194L60 150L95 172L150 120L205 168L240 146L300 178L0 200Z"/>` +
+    `<path fill="${sky2}" opacity=".9" d="M1200 194L1150 140L1110 170L1060 118L1010 165L970 145L920 180L1200 200Z"/>` : "";
+  let texts = `<g class="f1"><text class="title" x="600" y="${titleY}" text-anchor="middle">${esc(v.title)}</text></g>`;
+  let y = titleY + 42;
+  if (v.slogan) { texts += `<g class="f2"><text class="slogan" x="600" y="${y}" text-anchor="middle">${esc(v.slogan)}</text></g>`; y += 32; }
+  if (v.subtitle) { texts += `<g class="f3"><text class="desc" x="600" y="${y}" text-anchor="middle">${esc(v.subtitle.toUpperCase())}</text></g>`; }
+  const credit = v.credit ? `<text x="1188" y="214" text-anchor="end" font-family="${v.font}" font-size="10" fill="${v.ink}" opacity=".35">aurora-banner by @JuhaP2</text>` : "";
+  const fade = anim ? "opacity:0;animation:fade 1.4s ease-out forwards;" : "";
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 230" width="1200" height="230">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${v.sky}"/><stop offset="1" stop-color="${sky2}"/></linearGradient>
+    <linearGradient id="aurora" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="${v.c1}" stop-opacity="0"/><stop offset=".3" stop-color="${v.c1}" stop-opacity=".55"/>
+      <stop offset=".6" stop-color="${v.c2}" stop-opacity=".5"/><stop offset=".85" stop-color="${v.c3}" stop-opacity=".45"/>
+      <stop offset="1" stop-color="${v.c3}" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="blur" x="-10%" y="-50%" width="120%" height="200%"><feGaussianBlur stdDeviation="14"/></filter>
+    <style>
+      .title { font: 800 64px ${v.font}; fill: ${v.ink}; letter-spacing: 2px; }
+      .slogan { font: italic 500 24px ${v.font}; fill: ${v.c1}; letter-spacing: 1px; }
+      .desc { font: 500 15px ${v.font}; fill: ${v.ink}; opacity: .75; letter-spacing: 4px; }
+      .star { fill: ${v.ink}; ${anim ? "animation: twinkle 3s ease-in-out infinite;" : ""} }
+      ${anim ? `.w1 { animation: drift 9s ease-in-out infinite alternate; }
+      .w2 { animation: drift 12s ease-in-out infinite alternate-reverse; }
+      .f1 { ${fade} animation-delay: .2s; } .f2 { ${fade} animation-delay: .7s; } .f3 { ${fade} animation-delay: 1.2s; }
+      @keyframes drift { from { transform: translateX(-40px); } to { transform: translateX(40px); } }
+      @keyframes fade { to { opacity: 1; } }
+      @keyframes twinkle { 50% { opacity: .2; } }` : ""}
+    </style>
+  </defs>
+  <path fill="url(#sky)" d="M0 0H1200V180C1080 205 960 165 840 172C720 180 640 212 520 206C400 200 320 168 200 174C110 178 50 198 0 194Z"/>
+  <g filter="url(#blur)">
+    <path class="w1" fill="url(#aurora)" d="M-60 70C120 20 260 110 440 70S760 10 940 60S1180 110 1260 60V110C1100 150 960 90 800 120S500 160 320 120S60 100 -60 130Z"/>
+    <path class="w2" fill="url(#aurora)" opacity=".6" d="M-60 40C160 90 300 20 500 50S820 100 1000 40S1200 30 1260 50V80C1080 110 920 60 760 90S460 100 300 80S80 60 -60 90Z"/>
+  </g>
+  ${stars}
+  ${mountains}
+  ${texts}
+  ${credit}
+</svg>`;
+}
+
+function render() {
+  const svg = buildSVG();
+  $("preview").innerHTML = svg;
+  $("snippet").textContent =
+`<p align="center">
+  <img src="assets/banner.svg" width="100%" alt="${esc($("title").value.trim() || "Banner")}" />
+</p>`;
+}
+
+function setTheme(name) {
+  const t = THEMES[name];
+  for (const k of ["c1", "c2", "c3", "sky", "ink"]) $(k).value = t[k];
+  document.querySelectorAll(".theme").forEach((b) => b.setAttribute("aria-pressed", b.dataset.name === name));
+  render();
+}
+
+function toast(msg) {
+  $("toast").textContent = msg;
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => ($("toast").textContent = ""), 2500);
+}
+
+async function copy(text, msg) {
+  try { await navigator.clipboard.writeText(text); toast(msg); }
+  catch { toast("Copy failed. Select the text and copy it manually."); }
+}
+
+for (const [name, t] of Object.entries(THEMES)) {
+  const b = document.createElement("button");
+  b.className = "theme"; b.dataset.name = name; b.type = "button";
+  b.innerHTML = `<i style="background:linear-gradient(90deg,${t.c1},${t.c2},${t.c3})"></i>${name}`;
+  b.addEventListener("click", () => setTheme(name));
+  $("themes").appendChild(b);
+}
+document.querySelectorAll("input, select").forEach((el) => el.addEventListener("input", () => {
+  if (el.type === "color") document.querySelectorAll(".theme").forEach((b) => b.setAttribute("aria-pressed", "false"));
+  render();
+}));
+$("download").addEventListener("click", () => {
+  const blob = new Blob([buildSVG()], { type: "image/svg+xml" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "banner.svg";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast("banner.svg downloaded");
+});
+$("copy").addEventListener("click", () => copy($("snippet").textContent, "README snippet copied"));
+$("copysvg").addEventListener("click", () => copy(buildSVG(), "SVG code copied"));
+
+const params = new URLSearchParams(location.search);
+if (params.get("name")) $("title").value = params.get("name");
+setTheme(THEMES[params.get("theme")] ? params.get("theme") : "Aurora");
+</script>
+</body>
+</html>
